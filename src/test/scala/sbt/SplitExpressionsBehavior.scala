@@ -17,6 +17,14 @@ trait SplitExpressionsBehavior { this: FlatSpec =>
   
   def newExpressionsSplitter(implicit splitter: SplitExpressions) {
     
+    it should "parse a two settings without intervening blank line" in {
+      val (imports, settings) = split("""version := "1.0"
+scalaVersion := "2.10.4"""")
+      
+      assert(imports.isEmpty)
+      assert(settings.size === 2)
+    }
+    
   }
   
 }
