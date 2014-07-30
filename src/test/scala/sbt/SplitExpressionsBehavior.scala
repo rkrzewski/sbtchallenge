@@ -22,6 +22,17 @@ trait SplitExpressionsBehavior { this: FlatSpec =>
       assert(settingsAndDefs.isEmpty)
     }
 
+     it should "parse a config containing two imports and a setting" in {
+        val (imports, settingsAndDefs) = split(
+           """import foo.Bar
+              import foo.Bar
+
+             version := "1.0"
+           """.stripMargin)
+        assert(imports.size === 2)
+        assert(settingsAndDefs.size === 1)
+     }
+
     it should "parse a config containgn a def" in {
       val (imports, settingsAndDefs) = split("""def foo(x: Int) = {
   x + 1
@@ -53,6 +64,25 @@ scalaVersion := "2.10.4"""")
       assert(imports.isEmpty)
       assert(settings.size === 2)
     }
+
+     it should "parse a setting and val without intervening blank line" in {
+        val (imports, settings) = split("""version := "1.0"
+lazy val root = (project in file(".")).enablePlugins­(PlayScala)""")
+
+        assert(imports.isEmpty)
+        assert(settings.size === 2)
+     }
+
+
+     it should "parse a config containing two imports and a setting with no blank line" in {
+        val (imports, settingsAndDefs) = split(
+           """import foo.Bar
+              import foo.Bar
+             version := "1.0"
+           """.stripMargin)
+        assert(imports.size === 2)
+        assert(settingsAndDefs.size === 1)
+     }
 
   }
 
