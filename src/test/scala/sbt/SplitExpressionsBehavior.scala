@@ -9,19 +9,27 @@ trait SplitExpressionsBehavior { this: FlatSpec =>
   def oldExpressionsSplitter(implicit splitter: SplitExpressions) {
 
     it should "parse a simple setting" in {
-      val (imports, settings) = split("""version := "1.0"""")
-      assert(settings.head._1 === """version := "1.0"""")
+      val (imports, settingsAndDefs) = split("""version := "1.0"""")
+      assert(settingsAndDefs.head._1 === """version := "1.0"""")
       
       assert(imports.isEmpty)
-      assert(!settings.isEmpty)
+      assert(!settingsAndDefs.isEmpty)
     }
     
     it should "parse a config containing a single import" in {
-      val (imports, settings) = split("""import foo.Bar""")
+      val (imports, settingsAndDefs) = split("""import foo.Bar""")
       assert(!imports.isEmpty)
-      assert(settings.isEmpty)
+      assert(settingsAndDefs.isEmpty)
     }
-    
+
+    it should "parse a config containgn a def" in {
+      val (imports, settingsAndDefs) = split("""def foo(x: Int) = {
+  x + 1
+}""")
+      assert(imports.isEmpty)
+      assert(!settingsAndDefs.isEmpty)
+    }
+
   }
   
   def newExpressionsSplitter(implicit splitter: SplitExpressions) {

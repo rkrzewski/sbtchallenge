@@ -11,12 +11,10 @@ class EvaluateConfigurationsScalania extends SplitExpressions {
       val merged = lines.mkString("\n")
       val parsed = toolbox.parse(merged)
       val parsedTrees = parsed match {
-        case imp: Import =>
-          Seq(imp)
-        case apply: Apply =>
-          Seq(apply)
         case Block(stmt, expr) =>
           stmt :+ expr
+        case t: Tree =>
+          Seq(t)
       }
 
       val (imports, statements) = parsedTrees partition (_ match {
