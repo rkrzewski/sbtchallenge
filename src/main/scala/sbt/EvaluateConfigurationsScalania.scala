@@ -10,17 +10,25 @@ class EvaluateConfigurationsScalania extends SplitExpressions {
       val toolbox = mirror.mkToolBox(options = "-Yrangepos")
       val merged = lines.mkString("\n")
       val parsed = toolbox.parse(merged)
-      //      println(parsed)
       val parsedTrees = parsed match {
+        case imp: Import =>
+          Seq(imp)
         case apply: Apply =>
           Seq(apply)
         case Block(stmt, expr) =>
           stmt :+ expr
       }
-      def convertTree(t: Tree): (String, LineRange) =
-        (merged.substring(t.pos.start, t.pos.end), LineRange(t.pos.start, t.pos.end))
-      val parsedExpressions = parsedTrees map (convertTree)
 
-      (Seq(), parsedExpressions)
+      val (imports, statements) = parsedTrees partition (_ match {
+        case _: Import => true
+        case _ => false
+      })
+
+      def convertImport(t: Tree): (String, Int) =
+        (merged.substring(t.pos.start, t.pos.end), t.pos.start)
+      def convertStatement(t: Tree): (String, LineRange) =
+        (merged.substring(t.pos.start, t.pos.end), LineRange(t.pos.start, t.pos.end))
+
+      (imports map convertImport, statements map convertStatement)
     }
 }
