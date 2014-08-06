@@ -17,10 +17,10 @@ class EvaluateConfigurationsScalania extends SplitExpressions {
           Seq(t)
       }
 
-      val (imports, statements) = parsedTrees partition (_ match {
-        case _: Import => true
-        case _ => false
-      })
+      val (imports, statements) = parsedTrees partition {
+         case _: Import => true
+         case _ => false
+      }
 
       def convertImport(t: Tree): (String, Int) =
         (merged.substring(t.pos.start, t.pos.end), t.pos.start)
