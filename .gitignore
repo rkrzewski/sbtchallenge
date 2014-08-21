@@ -4,6 +4,5 @@
 .cache
 .settings/
 target/
-.idea/
-.idea_modules/
+.idea*
 

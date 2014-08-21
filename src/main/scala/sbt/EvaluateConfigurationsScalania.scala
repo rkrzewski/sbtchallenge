@@ -10,16 +10,21 @@ class EvaluateConfigurationsScalania extends SplitExpressions {
     import scala.reflect.runtime._
     import scala.reflect.runtime.universe._
     import scala.tools.reflect.ToolBox
+    import scala.compat.Platform.EOL
     val mirror = universe.runtimeMirror(this.getClass.getClassLoader)
     val toolbox = mirror.mkToolBox(options = "-Yrangepos")
     val merged = lines.mkString("\n")
+    // block try-catch should be added in private[sbt] def evaluateSbtFile.
+    // Here we do not have information about input file
     val parsed =
       try {
         toolbox.parse(merged)
       } catch {
-        case e:ToolBoxError =>
-          println(s"${toolbox.frontEnd.infos}")
-          throw e
+        case e: ToolBoxError =>
+          val seq = toolbox.frontEnd.infos.map(i =>
+            s"""${i.msg} line: ${i.pos.line}"""
+          )
+          throw new MessageOnlyException(seq.mkString(EOL))
       }
     val parsedTrees = parsed match {
       case Block(stmt, expr) =>
