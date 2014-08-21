@@ -12,6 +12,8 @@ class EvaluateConfigurationsScalania extends SplitExpressions {
     val mirror = universe.runtimeMirror(this.getClass.getClassLoader)
     val toolbox = mirror.mkToolBox(options = "-Yrangepos")
     val merged = lines.mkString("\n")
+    // block try-catch should be added in private[sbt] def evaluateSbtFile.
+    // Here we do not have information about input file
     val parsed =
       try {
         toolbox.parse(merged)
