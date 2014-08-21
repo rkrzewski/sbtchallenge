@@ -1,13 +1,18 @@
 package sbt
 
-class ErrorSpec extends AbstractSpec {
+import org.scalacheck.Gen._
+import org.scalacheck.Prop._
+import org.scalatest.prop.Checkers
 
-  def split(s: String)(implicit splitter: SplitExpressions) = splitter.splitExpressions(s.split("\n").toSeq)
+class ErrorSpec extends AbstractSpec with Checkers {
 
   "Errors " should {
-    "Show error line number " in {
-      val orgSplitter = new EvaluateConfigurationsOriginal
-      val buildSbt = """import sbt._
+    "Show contains line number" in {
+
+      check(forAll(alphaStr) {
+        (errorText) =>
+          errorText.nonEmpty ==> {
+            val buildSbt = s"""import sbt._
                        |import aaa._
                        |
                        |import scala._
@@ -17,25 +22,20 @@ class ErrorSpec extends AbstractSpec {
                        |ala
                        |
                        |libraryDependencies in Global ++= Seq(
-                       |ss
+                       |  $errorText
                        |  "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
                        |  "ch.qos.logback" % "logback-classic" % "1.1.2"
                        |)""".stripMargin
-      val orgSplitted = split(buildSbt)(orgSplitter)
 
-      printSeq(orgSplitted._1)
-      printSeq(orgSplitted._2)
-
-      val scalaniaSplitter = new EvaluateConfigurationsScalania
-
-      val scalaniaSplitted = split(buildSbt)(scalaniaSplitter)
-      printSeq(scalaniaSplitted._1)
-      printSeq(scalaniaSplitted._2)
-
+            implicit val splitter = new EvaluateConfigurationsScalania
+            val exception = intercept[MessageOnlyException] {
+              split(buildSbt)
+            }
+            exception.getMessage.matches(".*(\\d+).*")
+          }
+      })
     }
   }
 
-
-  private def printSeq[A](seq: Seq[A]) = println(seq.mkString("\n", "\n", "\n"))
 
 }

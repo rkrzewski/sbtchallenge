@@ -2,9 +2,11 @@ package sbt
 
 import org.scalatest.FlatSpec
 
-trait SplitExpressionsBehavior { this: FlatSpec =>
-
+trait SplitExpression {
   def split(s: String)(implicit splitter: SplitExpressions) = splitter.splitExpressions(s.split("\n").toSeq)
+}
+
+trait SplitExpressionsBehavior extends SplitExpression { this: FlatSpec =>
 
   def oldExpressionsSplitter(implicit splitter: SplitExpressions) {
 
