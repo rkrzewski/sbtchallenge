@@ -12,6 +12,10 @@ libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.5" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.10" % "test"
 
+instrumentSettings
+
+CoverallsPlugin.coverallsSettings
+
 EclipseKeys.withSource := true
 
 EclipseKeys.withBundledScalaContainers := false
