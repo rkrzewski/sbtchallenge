@@ -16,7 +16,7 @@ class SplitExpressionsFilesTest extends FlatSpec {
    val oldSplitter = new EvaluateConfigurationsOriginal
    val newSplitter = new EvaluateConfigurationsScalania
 
-   it should "split shole sbt files" in {
+   it should "split whole sbt files" in {
       val rootPath = getClass.getResource("").getPath + "../old-format/"
       println(s"Reading files from: $rootPath")
       val allFiles = new File(rootPath).listFiles.map(_.getAbsolutePath).toList
